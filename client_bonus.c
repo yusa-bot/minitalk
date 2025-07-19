@@ -6,7 +6,7 @@
 /*   By: ayusa <ayusa@student.42tokyo.jp>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 21:46:30 by ayusa             #+#    #+#             */
-/*   Updated: 2025/07/18 16:51:13 by ayusa            ###   ########.fr       */
+/*   Updated: 2025/07/19 14:03:46 by ayusa            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,17 +25,21 @@ static void	ack_handler(int sig)
 	}
 }
 
-static void	send_bit(pid_t pid, int bit)
+static int	send_bit(pid_t pid, int bit)
 {
 	int	sig;
+	int	res;
 
 	sig = SIGUSR1;
 	if (bit)
 		sig = SIGUSR2;
 	g_ack = 0;
-	kill(pid, sig);
+	res = kill(pid, sig);
+	if (res == -1)
+		return (1);
 	while (!g_ack)
-		usleep(10);
+		usleep(100);
+	return (0);
 }
 
 static void	send_char(pid_t pid, unsigned char c)
@@ -52,8 +56,9 @@ static void	send_char(pid_t pid, unsigned char c)
 
 int	main(int argc, char **argv)
 {
-	pid_t	pid;
-	char	*str;
+	pid_t				pid;
+	char				*str;
+	struct sigaction	sa;
 
 	if (argc != 3)
 		return (1);
