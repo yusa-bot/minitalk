@@ -6,7 +6,7 @@
 /*   By: ayusa <ayusa@student.42tokyo.jp>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 22:10:17 by ayusa             #+#    #+#             */
-/*   Updated: 2025/07/15 22:13:33 by ayusa            ###   ########.fr       */
+/*   Updated: 2025/07/18 15:26:51 by ayusa            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,5 +20,7 @@
 
 # include "./libft/libft.h"
 # include "./ft_printf/ft_printf.h"
+
+extern volatile sig_atomic_t	g_ack;
 
 #endif

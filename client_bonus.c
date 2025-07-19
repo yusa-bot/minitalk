@@ -6,7 +6,7 @@
 /*   By: ayusa <ayusa@student.42tokyo.jp>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 21:46:30 by ayusa             #+#    #+#             */
-/*   Updated: 2025/07/16 20:36:13 by ayusa            ###   ########.fr       */
+/*   Updated: 2025/07/18 16:51:13 by ayusa            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ static void	send_bit(pid_t pid, int bit)
 	g_ack = 0;
 	kill(pid, sig);
 	while (!g_ack)
-		usleep(50);
+		usleep(10);
 }
 
 static void	send_char(pid_t pid, unsigned char c)
@@ -59,8 +59,11 @@ int	main(int argc, char **argv)
 		return (1);
 	pid = (pid_t)ft_atoi(argv[1]);
 	str = argv[2];
-	signal(SIGUSR1, ack_handler);
-	signal(SIGUSR2, ack_handler);
+	sa.sa_handler = ack_handler;
+	sa.sa_flags = 0;
+	sigemptyset(&sa.sa_mask);
+	sigaction(SIGUSR1, &sa, NULL);
+	sigaction(SIGUSR2, &sa, NULL);
 	while (*str)
 		send_char(pid, *str++);
 	send_char(pid, '\0');

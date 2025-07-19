@@ -6,7 +6,7 @@
 /*   By: ayusa <ayusa@student.42tokyo.jp>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 20:10:24 by ayusa             #+#    #+#             */
-/*   Updated: 2025/07/16 20:38:27 by ayusa            ###   ########.fr       */
+/*   Updated: 2025/07/19 13:27:16 by ayusa            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@ static void	handler(int sig, siginfo_t *info, void *context)
 	static unsigned char	c;
 	static int				bit;
 
-	(void)info;
 	(void)context;
 	if (sig == SIGUSR2)
 		c |= (1 << (7 - bit));
@@ -25,9 +24,15 @@ static void	handler(int sig, siginfo_t *info, void *context)
 	if (bit == 8)
 	{
 		write(1, &c, 1);
+		if (c == '\0')
+		{
+			write(1, "\n", 1);
+			kill(info->si_pid, SIGUSR2);
+		}
 		bit = 0;
 		c = 0;
 	}
+	kill(info->si_pid, SIGUSR1);
 }
 
 int	main(void)

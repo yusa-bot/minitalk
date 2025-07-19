@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   client.c                                           :+:      :+:    :+:   */
+/*   mameo.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ayusa <ayusa@student.42tokyo.jp>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 20:20:55 by ayusa             #+#    #+#             */
-/*   Updated: 2025/07/19 13:28:18 by ayusa            ###   ########.fr       */
+/*   Updated: 2025/07/19 13:27:29 by ayusa            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,27 +22,37 @@ static void	ack_handler(int sig)
 		exit(0);
 }
 
-static void	send_bit(pid_t pid, int bit)
+static int	send_bit(pid_t pid, int bit)
 {
 	int	sig;
+	int	res;
 
 	sig = SIGUSR1;
 	if (bit)
 		sig = SIGUSR2;
 	g_ack = 0;
-	kill(pid, sig);
+	res = kill(pid, 0);
+	if (res == -1)
+		return (1);
 	while (!g_ack)
 		usleep(100);
+	return (0);
 }
 
 static void	send_char(pid_t pid, unsigned char c)
 {
 	int	i;
+	int	res;
 
 	i = 7;
 	while (i >= 0)
 	{
-		send_bit(pid, (c >> i) & 1);
+		res = send_bit(pid, (c >> i) & 1);
+		if (res == 1)
+		{
+			perror("Invalid PID");
+			exit (1);
+		}
 		i--;
 	}
 }
